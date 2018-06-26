@@ -1,12 +1,12 @@
 
 <p></p>
 <div tyle="font-size:16px" style="background-color: #fdf3a7" style="margin-top: 30px">CATEGORIES</div>
-<div id="blog-categories" style="font-size:16px">
+<div id="blog-categories" style="font-size:14px">
     {% assign sorted_categories = site.categories | sort %}
     {% for category in sorted_categories %}
     <li >
     <a href="#{{ category[0] }}"   style="color: #909090">{{ category | first }}</a>
-    <span class="badge">{{ category[1].size }}</span>
+    <span>({{ category[1].size }})</span>
     </li>
     {% endfor %}
 </div>
