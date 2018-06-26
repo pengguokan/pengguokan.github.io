@@ -1,15 +1,13 @@
 
-<h3>CATEGORIES</h3>
-<div id="blog-categories">
-  <ul class="list-group">
+<h3 style="color: #000">CATEGORIES</h3>
+<div id="blog-categories" style="font-size:14px">
     {% assign sorted_categories = site.categories | sort %}
     {% for category in sorted_categories %}
-    <li class="list-group-item">
-    <a href="#{{ category[0] }}">{{ category | first }}</a>
+    <li >
+    <a href="#{{ category[0] }}"  style="color: #909090">{{ category | first }}</a>
     <span class="badge">{{ category[1].size }}</span>
     </li>
     {% endfor %}
-  </ul>
 </div>
 
 <script type="text/javascript">
