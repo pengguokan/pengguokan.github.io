@@ -9,7 +9,11 @@
     word-wrap: break-word;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
-    -webkit-backface-visibility: hidden
+    -webkit-backface-visibility: hidden;
+}
+
+body{
+    border:4px solid #e0e0e0;
 }
 
 @font-face {
