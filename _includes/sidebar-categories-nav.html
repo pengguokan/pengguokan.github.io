@@ -1,14 +1,14 @@
 
 <div style="text-indent: 8px;color: #fff; font-size:16px;background-color: #a7b8ca;padding-top: 1px;padding-bottom: 1px;margin-top: 5px">CATEGORIES</div>
-<div id="blog-categories" style="text-indent: 8px;font-size:14px">
+<div id="blog-categories" style="text-indent: 8px;font-size:16px">
 
     
     {% assign sorted_categories = site.categories | sort %}
     {% for category in sorted_categories %}
-    <li >
+    <div >
     <a href="{{ site.url }}/categories/#{{ category[0] }}"   style="color: #909090">{{ category | first }}</a>
     <span>({{ category[1].size }})</span>
-    </li>
+    </div>
     {% endfor %}
 </div>
 
