@@ -6,7 +6,8 @@
     font-size: 14px;
     background: #fff;
     overflow: hidden;
-    width: 300px;
+    width: 100%;
+    margin-top: 20px;
     padding-bottom: 1em;
     border: 1px solid #efefef;
     color: #999;
