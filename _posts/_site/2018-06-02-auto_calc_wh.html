@@ -1,0 +1,119 @@
+<h2 id="导语">导语</h2>
+<p>Android UI开发时候，经常遇到涉及宽高比的场景，通常我们会在初始化写一堆代码，设置LayoutParam。本文设计一种扩展的Layout（基于FrameLayout、LinearLayout或者RelativeLayout），在xml布局文件只要指定少量参数，就可以高效地实现效果</p>
+
+<h2 id="正文">正文</h2>
+<p>UI开发过程中，通常会遇到类似这样的场景：图片宽度占满屏幕，高度是宽度的xxx倍。一般情况下，我们是这么解决的：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">View</span> <span class="n">view</span> <span class="o">=</span> <span class="n">LayoutInflator</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="n">getContext</span><span class="o">()).</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">xxx</span><span class="o">,</span> <span class="n">parent</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+<span class="c1">//为了获取LayoutParam，必须知道父容器的layout类型，否则Crash</span>
+<span class="n">FrameLayout</span><span class="o">.</span><span class="na">LayoutParam</span> <span class="n">lp</span> <span class="o">=</span> <span class="o">(</span><span class="n">FrameLayout</span><span class="o">.</span><span class="na">LayoutParam</span><span class="o">)</span><span class="n">view</span><span class="o">.</span><span class="na">getLayoutParam</span><span class="o">();</span>
+<span class="c1">//如果width已经是match_parent，那就按要求算出高度</span>
+<span class="kt">int</span> <span class="n">height</span> <span class="o">=</span> <span class="n">lp</span><span class="o">.</span><span class="na">getWidth</span><span class="o">()</span> <span class="o">/</span> <span class="mf">1.5</span><span class="o">;</span>
+<span class="c1">//更新view的高度</span>
+<span class="n">lp</span><span class="o">.</span><span class="na">height</span> <span class="o">=</span> <span class="n">height</span><span class="o">;</span>
+</code></pre></div></div>
+<p>这种实现，一方面不直观，另外也要我们找到合适的初始化位置修改。</p>
+
+<p>进一步思考：既然xml布局文件里边，可以用match_parent、wrap_content这种方式指定宽高，那能否增加宽高比的参数，来自动计算呢？答案是肯定的。</p>
+
+<p>首先了解下View的正常宽高是如何计算的。</p>
+
+<p>View的绘制包括Measure、Layout和Draw三部分，宽高的计算由Measure给出。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="n">performTraversals</span><span class="o">{</span>
+<span class="o">...</span>
+<span class="kt">int</span> <span class="n">childWidthMeasureSpec</span> <span class="o">=</span> <span class="n">getRootMeasureSpec</span><span class="o">(</span><span class="n">mWidth</span><span class="o">,</span> <span class="n">lp</span><span class="o">.</span><span class="na">width</span><span class="o">);</span>
+<span class="kt">int</span> <span class="n">childHeightMeasureSpec</span> <span class="o">=</span> <span class="n">getRootMeasureSpec</span><span class="o">(</span><span class="n">mHeight</span><span class="o">,</span> <span class="n">lp</span><span class="o">.</span><span class="na">height</span><span class="o">);</span>
+<span class="o">...</span>
+<span class="c1">//执行测量流程</span>
+<span class="n">performanceMeasure</span><span class="o">(</span><span class="n">childWidthMeasureSpec</span><span class="o">,</span> <span class="n">childHeightMeasureSpec</span><span class="o">);</span>
+<span class="o">...</span>
+<span class="c1">//执行布局流程</span>
+<span class="n">performLayout</span><span class="o">(</span><span class="n">lp</span><span class="o">,</span> <span class="n">desiredWindowWidthm</span> <span class="n">desiredWindowHeight</span><span class="o">);</span>
+<span class="o">...</span>
+<span class="c1">//执行绘制流程</span>
+<span class="n">performDraw</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>MeasureSpec是一个32位整形，高2位表示测量模式：EXACTLY（精确测量）、AT_MOST（最大值测量）还有一个不常见的UNSPECIFIED。</p>
+
+<p>EXACTLY：当该View的layout_width或者layout_height指定为具体数值或者match_parent时候，表示父容器已经决定了子View的精确大小，这种模式下View的测量值就是SpecSize的值。</p>
+
+<p>AT_MOST：当该View的layout_width和layout_height指定为wrap_content时生效，此时子View的尺寸可以是不超过父容器允许的最大尺寸。</p>
+
+<p>Measure操作用来计算View的实际大，从performMeasure开始：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">performanceMeasure</span><span class="o">(</span><span class="kt">int</span> <span class="n">childWidthMeasureSpec</span><span class="o">,</span> <span class="kt">int</span> <span class="n">childHeightMeasureSpec</span><span class="o">){</span>
+<span class="o">...</span>
+<span class="n">mView</span><span class="o">.</span><span class="na">measure</span><span class="o">(</span><span class="n">childWidthMeasureSpec</span><span class="o">,</span> <span class="n">childHeightMeasureSpec</span><span class="o">)</span>
+<span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>具体的测量时分发给ViewGroup的，由ViewGroup在它的measureChild方法中传递给子View：ViewGroup通过遍历自身所有的子View，并逐个调用子View的measure方法；并且最终会通过onMeasure，回调开发者自定义实现：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">meassure</span><span class="o">(</span><span class="kt">int</span> <span class="n">widthMeassureSpec</span><span class="o">,</span> <span class="kt">int</span> <span class="n">heightMeasureSpec</span><span class="o">){</span>
+<span class="o">...</span>
+<span class="n">onMeassure</span><span class="o">(</span><span class="n">widthMeassureSpec</span><span class="o">,</span> <span class="n">heightMeasureSpec</span><span class="o">);</span>
+<span class="o">...</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>所以如果要更改View的宽高，可以自己实现Layout的onMeasure方法。</p>
+
+<p>为了能够用xml指定宽高比，需要定义属性。在res/value目录下新建一个属性文件：</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;resources&gt;</span>
+    <span class="nt">&lt;declare-styleable</span> <span class="na">name=</span><span class="s">"ExtensionLayout"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;attr</span> <span class="na">name=</span><span class="s">"width_to_height"</span> <span class="na">format=</span><span class="s">"float"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;attr</span> <span class="na">name=</span><span class="s">"calc_by_width"</span> <span class="na">format=</span><span class="s">"boolean"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/declare-styleable&gt;</span>
+<span class="nt">&lt;/resources&gt;</span>
+</code></pre></div></div>
+<p>其中width_to_height用来代表宽高比，calc_by_width指定了是按宽固定或是高固定计算另外一边的值。</p>
+
+<p>以FrameLayout为例，我们可以这么实现：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExtensionFrameLayout</span> <span class="kd">extends</span> <span class="n">FrameLayout</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">float</span> <span class="n">mWidthToHeight</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">mCalcByWidth</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">ExtensionFrameLayout</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">ExtensionFrameLayout</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">AttributeSet</span> <span class="n">attrs</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">attrs</span><span class="o">);</span>
+        <span class="n">TypedArray</span> <span class="n">array</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">obtainStyledAttributes</span><span class="o">(</span><span class="n">attrs</span><span class="o">,</span> <span class="n">R</span><span class="o">.</span><span class="na">styleable</span><span class="o">.</span><span class="na">ExtensionFrameLayout</span><span class="o">);</span>
+        <span class="n">mWidthToHeight</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getFloat</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">styleable</span><span class="o">.</span><span class="na">ExtensionLayout_width_to_height</span><span class="o">,</span> <span class="mf">1.0f</span><span class="o">);</span>
+        <span class="n">mCalcByWidth</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getBoolean</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">styleable</span><span class="o">.</span><span class="na">ExtensionLayout_calc_by_width</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="n">mCornerRadius</span> <span class="o">=</span> 
+        <span class="n">array</span><span class="o">.</span><span class="na">recycle</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">ExtensionFrameLayout</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">AttributeSet</span> <span class="n">attrs</span><span class="o">,</span> <span class="kt">int</span> <span class="n">defStyleAttr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">attrs</span><span class="o">,</span> <span class="n">defStyleAttr</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onMeasure</span><span class="o">(</span><span class="kt">int</span> <span class="n">widthMeasureSpec</span><span class="o">,</span> <span class="kt">int</span> <span class="n">heightMeasureSpec</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">mWidthToHeight</span> <span class="o">&gt;</span> <span class="mf">0.0f</span><span class="o">){</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">mCalcByWidth</span><span class="o">){</span>
+                <span class="kt">int</span> <span class="n">screenHeight</span> <span class="o">=</span> <span class="n">DeviceManager</span><span class="o">.</span><span class="na">getScreenHeight</span><span class="o">(</span><span class="n">getContext</span><span class="o">());</span>
+                <span class="kt">int</span> <span class="n">height</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">View</span><span class="o">.</span><span class="na">MeasureSpec</span><span class="o">.</span><span class="na">getSize</span><span class="o">(</span><span class="n">widthMeasureSpec</span><span class="o">)</span> <span class="o">/</span> <span class="n">mWidthToHeight</span><span class="o">);</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">screenHeight</span><span class="o">){</span>
+                    <span class="n">height</span> <span class="o">=</span> <span class="n">screenHeight</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">heightMeasureSpec</span> <span class="o">=</span> <span class="n">View</span><span class="o">.</span><span class="na">MeasureSpec</span><span class="o">.</span><span class="na">makeMeasureSpec</span><span class="o">(</span><span class="n">height</span><span class="o">,</span> <span class="n">View</span><span class="o">.</span><span class="na">MeasureSpec</span><span class="o">.</span><span class="na">EXACTLY</span><span class="o">);</span>
+            <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+                <span class="kt">int</span> <span class="n">screenWidth</span> <span class="o">=</span> <span class="n">DeviceManager</span><span class="o">.</span><span class="na">getScreenWidth</span><span class="o">(</span><span class="n">getContext</span><span class="o">());</span>
+                <span class="kt">int</span> <span class="n">width</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="n">View</span><span class="o">.</span><span class="na">MeasureSpec</span><span class="o">.</span><span class="na">getSize</span><span class="o">(</span><span class="n">heightMeasureSpec</span><span class="o">)</span> <span class="o">/</span> <span class="n">mWidthToHeight</span><span class="o">);</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">screenWidth</span><span class="o">){</span>
+                    <span class="n">width</span> <span class="o">=</span> <span class="n">screenWidth</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">widthMeasureSpec</span> <span class="o">=</span> <span class="n">View</span><span class="o">.</span><span class="na">MeasureSpec</span><span class="o">.</span><span class="na">makeMeasureSpec</span><span class="o">(</span><span class="n">width</span><span class="o">,</span> <span class="n">View</span><span class="o">.</span><span class="na">MeasureSpec</span><span class="o">.</span><span class="na">EXACTLY</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onMeasure</span><span class="o">(</span><span class="n">widthMeasureSpec</span><span class="o">,</span> <span class="n">heightMeasureSpec</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>在使用的时候，只要添加这两个参数，就可以轻松的实现宽高比：
+<img src="/images/posts/auto_calc.png" alt="" /></p>
+
+<h2 id="总结">总结</h2>
+
+<p>核心是通过重写Layout的onMeasure方法，通过xml传入参数，计算好宽高。这样可以帮助开发者，专注其他逻辑，不用关心布局的调整。</p>
