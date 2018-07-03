@@ -8,7 +8,7 @@ keywords: 线程
 
 产品发布后，遇到了这么一类外网Crash：
 
-![](/images/posts/OOM_1.png)
+![](/images/posts/oom_1.png)
 
 从堆栈看是Java层的Thread对象调用start()方法遇到了OutOfMemory Crash了。为了找出OOM的原因，我深入研究了一下线程创建的流程。
 
@@ -202,7 +202,7 @@ ashmem_create_region如果成功了，那么会映射一个512*sizeof(IrtEntry)�
 ```
 从外网用户上报的日志来看，设备内存还是挺充裕的：
 
-![](/images/posts/OOM_2.png)
+![](/images/posts/oom_2.png)
 
 所以应该是进程内的虚拟地址空间不足导致的。
 
