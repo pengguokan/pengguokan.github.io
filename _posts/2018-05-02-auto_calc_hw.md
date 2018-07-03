@@ -1,15 +1,11 @@
 ---
 layout: post
-title: Android 布局自动宽高比的实现
+title: Android 实现布局自动宽高比
 categories: [Android,UI]
 description: 
 keywords: UI
 ---
 
-## 导语
-Android UI开发时候，经常遇到涉及宽高比的场景，通常我们会在初始化写一堆代码，设置LayoutParam。本文设计一种扩展的Layout（基于FrameLayout、LinearLayout或者RelativeLayout），在xml布局文件只要指定少量参数，就可以高效地实现效果
-
-## 正文
 UI开发过程中，通常会遇到类似这样的场景：图片宽度占满屏幕，高度是宽度的xxx倍。一般情况下，我们是这么解决的：
 ```java
 View view = LayoutInflator.from(getContext()).inflate(R.layout.xxx, parent, false);
