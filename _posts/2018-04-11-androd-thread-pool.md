@@ -6,11 +6,11 @@ description: 创建线程OOM问题分析
 keywords: 线程
 ---
 
-产品发布后，遇到了这么一类外网Crash：
+产品发布后，遇到了这么一类外网Crash：从堆栈看是Java层的Thread对象调用start()方法遇到了OutOfMemory Crash了。
 
 ![](/images/posts/oom_1.png)
 
-从堆栈看是Java层的Thread对象调用start()方法遇到了OutOfMemory Crash了。为了找出OOM的原因，我深入研究了一下线程创建的流程。
+为了找出OOM的原因，决定探索一下线程创建的流程。
 
 最上层在new Thread()后调用start()，会调用虚拟机的nativeCreate。
 

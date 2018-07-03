@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【工作随记】从乱序数组中找一个元素
+title: 从乱序数组中找一个元素
 categories: [算法, 工作]
 description: 记工作中的
 keywords: 数组, 算法

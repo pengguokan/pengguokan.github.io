@@ -7,6 +7,8 @@ keywords: UI
 ---
 
 UI开发过程中，通常会遇到类似这样的场景：图片宽度占满屏幕，高度是宽度的xxx倍。一般情况下，我是这么解决的：
+
+
 ```java
 View view = LayoutInflator.from(getContext()).inflate(R.layout.xxx, parent, false);
 //为了获取LayoutParam，必须知道父容器的layout类型，否则Crash
