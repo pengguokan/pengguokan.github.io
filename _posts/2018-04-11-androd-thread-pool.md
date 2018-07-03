@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 创建线程OOM问题分析
-categories: [Android,线程]
+categories: [Android,疑难问题]
 description: 创建线程OOM问题分析
 keywords: 线程
 ---
