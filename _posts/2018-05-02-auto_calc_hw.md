@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Android 布局自动宽高比的实现
-categories: Android
+categories: [Android,UI]
 description: 
 keywords: UI
 ---

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 旺达与巨像
-categories: PS4
+categories: [游戏,PS4]
 description: 旺达与巨像的感受
 keywords: PS4，game
 ---
