@@ -332,13 +332,6 @@ function getContent(){
     content += "\n\n\t";
     content += "Common{";
     content += "\n\t\t";
-
-    if(document.getElementById('needlog').checked){
-        content += "useLog = true";
-    }else{
-        content += "useLog = false";
-    }
-    content += "\n\t\t";
     if(document.getElementById('needlog').checked){
         content += "Log = true";
     }else{
