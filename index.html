@@ -224,7 +224,7 @@
 function getContent(){
     var content = "AppConfig{\n\n";
     content += "\t"
-    content += ("FrameworkVersion = \"" + document.getElementById('frameversion').value) + "\"";
+    content += ("frameworkVersion = \"" + document.getElementById('frameversion').value) + "\"";
 
     if(document.getElementById('git').value.length != 0){
         content += "\n\n\t"
@@ -238,11 +238,11 @@ function getContent(){
     content += "\n\n\t";
     content += "Scheme = \"" + document.getElementById('scheme').value + "\"";
     content += "\n\n\t";
-    content += "CompileSDKVersion = " + document.getElementById('csdk').value;
+    content += "compileSDKVersion = " + document.getElementById('csdk').value;
     content += "\n\n\t";
-    content += "MinSDKVersion = " + document.getElementById('msdk').value;
+    content += "minSDKVersion = " + document.getElementById('msdk').value;
     content += "\n\n\t";
-    content += "TargetSDKVersion = " + document.getElementById('tsdk').value;
+    content += "targetSDKVersion = " + document.getElementById('tsdk').value;
 
     content += "\n\n\t";
     content += "Login{";
@@ -279,7 +279,7 @@ function getContent(){
     
     
     content += "\n\n\t";
-    content += "Share{";
+    content += "Webview{";
     content += "\n\t\t";
 
     if(document.getElementById('needwebview').checked){
@@ -289,15 +289,15 @@ function getContent(){
     }
     content += "\n\t\t";
     if(document.getElementById('needoffline').checked){
-        content += "useOffline = true";
+        content += "supportOffline = true";
     }else{
-        content += "useOffline = false";
+        content += "supportOffline = false";
     }
     content += "\n\t\t";
     if(document.getElementById('needrn').checked){
-        content += "useReactNative = true";
+        content += "supportReactNative = true";
     }else{
-        content += "useReactNative = false";
+        content += "supportReactNative = false";
     }
     content += "\n\t}"
 
@@ -326,34 +326,34 @@ function getContent(){
         content += "useBugly = false";
     }
     content += "\n\t\t";
-    content += "buglyID = \"" + document.getElementById('buglyid').value + "\"";
+    content += "buglyAppID = \"" + document.getElementById('buglyid').value + "\"";
     content += "\n\t}"
 
     content += "\n\n\t";
     content += "Common{";
     content += "\n\t\t";
     if(document.getElementById('needlog').checked){
-        content += "Log = true";
+        content += "log = true";
     }else{
-        content += "Log = false";
+        content += "log = false";
     }
     content += "\n\t\t";
     if(document.getElementById('needevent').checked){
-        content += "Event = true";
+        content += "event = true";
     }else{
-        content += "Event = false";
+        content += "event = false";
     }
     content += "\n\t\t";
     if(document.getElementById('needthread').checked){
-        content += "Thread = true";
+        content += "thread = true";
     }else{
-        content += "Thread = false";
+        content += "thread = false";
     }
     content += "\n\t\t";
     if(document.getElementById('needextension').checked){
-        content += "Extension = true";
+        content += "extension = true";
     }else{
-        content += "Extension = false";
+        content += "extension = false";
     }
     content += "\n\t}"
 
