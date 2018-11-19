@@ -1,91 +1,382 @@
----
-layout: default
-class: home
-css: ['pages/index.css']
-comments: false
----
 
-<section class="banner">
-    <div class="collection-head">
-        <div class="container">
-            <div class="collection-title">
-                <div class="collection-header" id="sub-title">
-                  <span>{{ site.subtitle }}</span>
-                </div> 
-                <div>
-                    <span>思绪来去太快，需要留下点什么</span>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>App搭建系统</title>
+    <style>
+      form {
+        /* Just to center the form on the page */
+        margin: 0 auto;
+        width: 500px;
+        /* To see the outline of the form */
+        padding: 1em;
+        border: 1px solid #CCC;
+        border-radius: 1em;
+      }
+
+      form div + div {
+        margin-top: 1em;
+      }
+
+      label {
+        /* To make sure that all labels have the same size and are properly aligned */
+        display: inline-block;
+        width: 150px;
+        text-align: right;
+        margin-right: 10px
+      }
+      .xxx{
+          display: flex;
+      }
+
+      .yyy{
+        border-top:2px dashed #cd594a;
+        border-left:2px dashed #cd594a;
+        border-right:2px dashed #cd594a;
+        border-bottom:2px dashed #cd594a;
+        padding-top: 1em;
+        padding-bottom: 1em;
+      }
+      .zzz{
+        color:#363537;
+        font: 1em sans-serif;
+        font-style:italic
+      }
+
+      input {
+        /* To make sure that all text fields have the same font settings By default, textareas have a monospace font */
+        font: 1em sans-serif;
+        /* To give the same size to all text fields */
+        width: 300px;
+        box-sizing: border-box; /* To harmonize the look & feel of text field border */
+        border: 1px solid #999;
+        color:#00F;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-left:10px;
+      }
+
+      input:focus, textarea:focus {
+        /* To give a little highlight on active elements */
+        border-color: #000;
+      }
+
+      textarea {
+        /* To properly align multiline text fields with their labels */
+        vertical-align: top;
+        /* To give enough room to type some text */
+        height: 5em;
+      }
+
+      .button {
+        /* To position the buttons to the same position of the text fields */
+        padding-left: 90px;
+        /* same size as the label elements */
+      }
+
+      button {
+        /* This extra margin represent roughly the same space as the space between the labels and their text fields */
+        margin-left: .5em;
+      }
+    </style>
+</head>
+
+<body>
+    <form action="/my-handling-form-page" method="post">
+
+        <div class="yyy">
+            <div>
+                <label for="name">Framework Version:</label> <input type="text" class="zzz" onchange="getContent()" id="frameversion" value="2.2.7-SNAPSHOT">
+            </div>
+        
+            <div>
+                <label for="name">Git地址:</label> <input type="text" id="git"  class="zzz" onchange="getContent()"  name="user_name">
+            </div>
+        </div>
+        
+        <div  class="yyy">
+            <div>
+                <label for="name">App Name:</label> <input type="text" id="appname"  class="zzz" onchange="getContent()"  value="LegoDemo">
+            </div>
+    
+            <div>
+                <label for="name">Package Name:</label> <input type="text" id="package"  class="zzz" onchange="getContent()"  value="com.tencent.legodemo">
+            </div>
+    
+            <div>
+                <label for="name">Scheme:</label> <input type="text" id="scheme"  class="zzz" onchange="getContent()" value="legodemo">
+            </div>
+    
+            <div>
+                <label for="name">CompileSDK Version:</label> <input type="text" id="csdk" class="zzz"  onchange="getContent()"  value="26">
+            </div>
+    
+            <div>
+                <label for="name">MinSDK Version:</label> <input type="text" id="msdk"  class="zzz" onchange="getContent()"  value="15">
+            </div>
+    
+            <div>
+                <label for="name">TargetSDK Version:</label> <input type="text" id="tsdk" class="zzz"  onchange="getContent()" value="28">
+            </div>
+        </div>
+
+        <div  class="yyy">
+            <div class='xxx'>
+                <label for="name">需要 Log:</label> <input type="checkbox" id="needlog"  class="zzz" onchange="getContent()"  name="vehicle1" checked="checked" value="1">
+            </div>
+    
+            <div class='xxx'>
+                <label for="name">需要 Thread:</label> <input type="checkbox" id="needthread"  class="zzz" onchange="getContent()"  name="vehicle1" checked="checked" value="checked">
+            </div>
+    
+            <div class='xxx'>
+                <label for="name">需要 Event:</label> <input type="checkbox" id="needevent"  class="zzz" onchange="getContent()"  name="vehicle1" checked="checked" value="checked">
+            </div>
+    
+            <div class='xxx'>
+                <label for="name">需要 Extension:</label> <input type="checkbox" id="needextension"  class="zzz" onchange="getContent()"  name="vehicle1" checked="checked" value="checked">
+            </div>
+        </div>
+
+        
+        <div  class="yyy">
+
+            <div class='xxx'>
+                <label for="name">需要 登录:</label> <input type="checkbox" class="zzz"  id="needlogin" onchange="getContent()" checked="checked">
+            </div>
+
+
+            <div>
+                <label for="name">QQ登录AppID:</label> <input type="text" id="qqloginid" class="zzz"  onchange="getContent()"  value="140000543">
+            </div>
+
+            <div>
+                <label for="name">WX登录AppID:</label> <input type="text" id="wxloginid" class="zzz"  onchange="getContent()" value="140000543">
+            </div>
+
+
+        </div>
+
+        <div  class="yyy">
+            <div class='xxx'>
+                <label for="name">需要 分享:</label> <input type="checkbox" id="needshare"  class="zzz" onchange="getContent()" >
+            </div>
+
+            <div>
+                <label for="name">QQ分享AppID:</label> <input type="text" id="qqshareid" class="zzz"  onchange="getContent()"  value="140000543">
+            </div>
+
+            <div>
+                <label for="name">WX分享AppID:</label> <input type="text" id="wxshareid"  class="zzz" onchange="getContent()"  value="140000543">
+            </div>
+        </div>
+        
+        <div  class="yyy">
+            <div class='xxx'>
+                <label for="name">需要 Webview:</label> <input type="checkbox" id="needwebview" class="zzz"  onchange="getContent()"  name="vehicle1" value="Bike">
+            </div>
+
+            <div class='xxx'>
+                <label for="name">需要 离线包:</label> <input type="checkbox" id="needoffline" class="zzz"  onchange="getContent()"  name="vehicle1" value="Bike">
+            </div>
+
+            <div class='xxx'>
+                <label for="name">需要 ReactNative:</label> <input type="checkbox" id="needrn" class="zzz"  onchange="getContent()"  name="vehicle1" value="Bike">
+            </div>
+        </div>
+
+        <div  class="yyy">
+            <div class='xxx'>
+                <label for="name">需要 数据上报:</label> <input type="checkbox" id="needreport" class="zzz"  onchange="getContent()" name="vehicle1" value="Bike">
+            </div>
+
+            <div>
+                <label for="name">上报表名:</label> <input type="text" id="reporttid" class="zzz"  onchange="getContent()"  value="xproxy_quality">
+            </div>
+        </div>
+
+        <div  class="yyy">
+            <div class='xxx'>
+                <label for="name">需要 Bugly:</label> <input type="checkbox" id="needbugly" class="zzz"  onchange="getContent()"  name="vehicle1" value="Bike">
+            </div>
+    
+            <div>
+                <label for="name">Bugly AppID:</label> <input type="text" id="buglyid" class="zzz"  onchange="getContent()"  value="140000543">
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                <a id="save-btn" class="btn btn-default" download="config.txt" role="button">导出配置文件</a>
                 </div>
             </div>
         </div>
-    </div>
-</section>
 
-<!-- /.banner -->
-<section class="container content">
-    <div class="columns">
-        <div class="column three-fourths" >
-            <ol class="repo-list">
-                {% for post in paginator.posts %}
-                <li class="repo-list-item">
-                    <h3 class="repo-list-name">
-                      <a href="{{ site.url }}{{ post.url }}">{{ post.title }}</a>
-                    </h3>
-                    <p class="repo-list-description">
-                        {{ post.excerpt | strip_html | strip }}
-                    </p>
-                    <p class="repo-list-meta">
-                        <span class="meta-info">
-                          <span class="octicon octicon-calendar"></span> {{ post.date | date: "%Y/%m/%d" }}
-                        </span>
-                        {% for cat in post.categories %}
-                        <span class="meta-info">
-                          <span class="octicon octicon-file-directory"></span>
-                          <a href="{{ site.url }}/categories/#{{ cat }}" title="{{ cat }}">{{ cat }}</a>
-                        </span>
-                        {% endfor %}
-                    </p>
-                </li>
-                {% endfor %}
-            </ol>
-        </div>
-        <div class="column one-fourth" style="padding-top: 10px;">
+    </form>
+</body>
 
-            {% include sidebar-popular-repo.html %}
-            {% include sidebar-search.html %}
-            {% include sidebar-categories-nav.html %}
-            
-        </div>
-    </div>
-    <div class="pagination text-align">
-      <div class="btn-group">
-        {% if paginator.previous_page %}
-          {% if paginator.previous_page == 1 %}
-              <a href="{{ site.url }}/" class="btn btn-outline">&laquo;</a>
-          {% else %}
-              <a href="{{ site.url }}/page{{paginator.previous_page}}"  class="btn btn-outline">&laquo;</a>
-          {% endif %}
-        {% else %}
-            <button disabled="disabled" href="javascript:;" class="btn btn-outline">&laquo;</button>
-        {% endif %}
-        {% if paginator.page == 1 %}
-            <a href="javascript:;" class="active btn btn-outline">1</a>
-        {% else %}
-            <a href="{{ site.url }}/"  class="btn btn-outline">1</a>
-        {% endif %}
-        {% for count in (2..paginator.total_pages) %}
-          {% if count == paginator.page %}
-              <a href="javascript:;"  class="active btn btn-outline">{{count}}</a>
-          {% else %}
-              <a href="{{ site.url }}/page{{count}}"  class="btn btn-outline">{{count}}</a>
-          {% endif %}
-        {% endfor %}
-        {% if paginator.next_page %}
-            <a href="{{ site.url }}/page{{paginator.next_page}}"  class="btn btn-outline">&raquo;</a>
-        {% else %}
-            <button disabled="disabled" href="javascript:;" class="btn btn-outline">&raquo;</button>
-        {% endif %}
-        </div>
-    </div>
-    <!-- /pagination -->
-</section>
-<!-- /section.content -->
+
+<script type="text/javascript">
+   
+
+function getContent(){
+    var content = "AppConfig{\n\n";
+    content += "\t"
+    content += ("FrameworkVersion = \"" + document.getElementById('frameversion').value) + "\"";
+
+    if(document.getElementById('git').value.length != 0){
+        content += "\n\n\t"
+        content += "git = \"" + document.getElementById('git').value + "\"";
+    }
+
+    content += "\n\n\t";
+    content += "AppName = \"" + document.getElementById('appname').value + "\"";
+    content += "\n\n\t";
+    content += "PackageName = \"" + document.getElementById('package').value + "\"";
+    content += "\n\n\t";
+    content += "Scheme = \"" + document.getElementById('scheme').value + "\"";
+    content += "\n\n\t";
+    content += "CompileSDKVersion = " + document.getElementById('csdk').value;
+    content += "\n\n\t";
+    content += "MinSDKVersion = " + document.getElementById('msdk').value;
+    content += "\n\n\t";
+    content += "TargetSDKVersion = " + document.getElementById('tsdk').value;
+
+    content += "\n\n\t";
+    content += "Login{";
+    content += "\n\t\t";
+
+    if(document.getElementById('needlogin').checked){
+        content += "useLogin = true";
+    }else{
+        content += "useLogin = false";
+    }
+    content += "\n\t\t";
+    content += "qqAppID = \"" + document.getElementById('qqloginid').value + "\"";
+    content += "\n\t\t";
+    content += "wxAppID = \"" + document.getElementById('wxloginid').value + "\"";
+    content += "\n\t}"
+
+    content += "\n\n\t";
+    content += "Share{";
+    content += "\n\t\t";
+
+    if(document.getElementById('needshare').checked){
+        content += "useShare = true";
+    }else{
+        content += "useShare = false";
+    }
+    content += "\n\t\t";
+    content += "qqShareAppID = \"" + document.getElementById('qqshareid').value + "\"";
+    content += "\n\t\t";
+    content += "wxShareAppID = \"" + document.getElementById('wxshareid').value + "\"";
+    content += "\n\t}"
+
+
+    
+    
+    
+    content += "\n\n\t";
+    content += "Share{";
+    content += "\n\t\t";
+
+    if(document.getElementById('needwebview').checked){
+        content += "useWebview = true";
+    }else{
+        content += "useWebview = false";
+    }
+    content += "\n\t\t";
+    if(document.getElementById('needoffline').checked){
+        content += "useOffline = true";
+    }else{
+        content += "useOffline = false";
+    }
+    content += "\n\t\t";
+    if(document.getElementById('needrn').checked){
+        content += "useReactNative = true";
+    }else{
+        content += "useReactNative = false";
+    }
+    content += "\n\t}"
+
+
+    content += "\n\n\t";
+    content += "DataReport{";
+    content += "\n\t\t";
+
+    if(document.getElementById('needreport').checked){
+        content += "useDataReport = true";
+    }else{
+        content += "useDataReport = false";
+    }
+    content += "\n\t\t";
+    content += "tableID = \"" + document.getElementById('reporttid').value + "\"";
+    content += "\n\t}"
+
+
+    content += "\n\n\t";
+    content += "Bugly{";
+    content += "\n\t\t";
+
+    if(document.getElementById('needbugly').checked){
+        content += "useBugly = true";
+    }else{
+        content += "useBugly = false";
+    }
+    content += "\n\t\t";
+    content += "buglyID = \"" + document.getElementById('buglyid').value + "\"";
+    content += "\n\t}"
+
+    content += "\n\n\t";
+    content += "Common{";
+    content += "\n\t\t";
+
+    if(document.getElementById('needlog').checked){
+        content += "useLog = true";
+    }else{
+        content += "useLog = false";
+    }
+    content += "\n\t\t";
+    if(document.getElementById('needlog').checked){
+        content += "Log = true";
+    }else{
+        content += "Log = false";
+    }
+    content += "\n\t\t";
+    if(document.getElementById('needevent').checked){
+        content += "Event = true";
+    }else{
+        content += "Event = false";
+    }
+    content += "\n\t\t";
+    if(document.getElementById('needthread').checked){
+        content += "Thread = true";
+    }else{
+        content += "Thread = false";
+    }
+    content += "\n\t\t";
+    if(document.getElementById('needextension').checked){
+        content += "Extension = true";
+    }else{
+        content += "Extension = false";
+    }
+    content += "\n\t}"
+
+
+
+    content += "\n\n}";
+
+    document.querySelector( '#save-btn' ).setAttribute( 'href', 'data:text/paint; utf-8,' + content );
+
+    return content;
+}
+void function(){
+      document.querySelector( '#save-btn' ).setAttribute( 'href', 'data:text/paint; utf-8,' + getContent());
+    }();
+    
+ </script>
+</html>
+
